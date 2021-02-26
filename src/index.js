@@ -41,28 +41,27 @@ fetch('http://localhost:3000/toys')
   })
 })
 
+
+
 const form = document.querySelector('form.add-toy-form')
 form.addEventListener('submit',(e)=>{
   e.preventDefault()
-  const newToy = document.createElement('div')
-  newToy.className = 'card'
-  const name = document.createElement('h2')
-  name.innerText = e.target.name.value
-  const imgTag = document.createElement('img')
-  imgTag.src = e.target.image.value
-  imgTag.className = 'toy-avatar'
-  const likes = document.createElement('p')
-  const button = document.createElement('button')
-  button.innerText = ' Delete '
-  button.className = 'like-btn'
-  newToy.append(name, imgTag, likes, button);
-  return newToy
-  console.log(newToy)
+  postToy(e.target)
 })
-// fetch('http://localhost:3000/toys', {
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   body: JSON.stringify(data),
-// }))
+
+function postToy(toy){
+  fetch('http://localhost:3000/toys', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    "name": toy.name.value,
+    "image": toy.image.value
+  }),
+})
+  .then(res => res.json())
+  .then(toy => {
+    loadSingleToy(toy)
+  })
+}
