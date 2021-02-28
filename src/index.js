@@ -14,30 +14,35 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-const collection = document.querySelector('#toy-collection')
 
 function loadSingleToy(toy){
+  const collection = document.querySelector('#toy-collection')
   const newDiv = document.createElement('div')
   newDiv.className = 'card'
+  newDiv.id = toy.id
   const name = document.createElement('h2')
   name.innerText = toy.name
   const imgTag = document.createElement('img')
   imgTag.src = toy.image
   imgTag.className = 'toy-avatar'
   const likes = document.createElement('p')
-  likes.innerText = toy.likes
+  likes.innerText = `${toy.likes} Likes`
   const button = document.createElement('button')
-  button.innerText = ' Delete '
+  button.innerText = 'Like <3'
   button.className = 'like-btn'
-  newDiv.append(name, imgTag, likes, button);
-  return newDiv
+  const deleteButton = document.createElement('button')
+  deleteButton.innerText = 'Delete'
+  button.addEventListener('click', () => likeToy(toy))
+  deleteButton.addEventListener('click', () => deleteToy(toy))
+  newDiv.append(name, imgTag, likes, button, deleteButton);
+  collection.appendChild(newDiv)
 }
 
 fetch('http://localhost:3000/toys')
 .then(response => response.json())
 .then(toys => {
   toys.forEach(toy =>{
-    collection.appendChild(loadSingleToy(toy))
+    loadSingleToy(toy)
   })
 })
 
@@ -57,11 +62,43 @@ function postToy(toy){
   },
   body: JSON.stringify({
     "name": toy.name.value,
-    "image": toy.image.value
+    "image": toy.image.value,
+    "likes": 0
   }),
 })
   .then(res => res.json())
   .then(toy => {
     loadSingleToy(toy)
+  })
+}
+
+function likeToy(toy){
+  toy.likes++
+  fetch(`http://localhost:3000/toys/${toy.id}`, {
+    method: 'PATCH',
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify({
+      likes : toy.likes
+    }),
+  })
+  .then(r => r.json())
+  .then(toy => {
+    let thisToy = document.querySelector(`div${toy.id}`)
+    let p = thisToy.querySelector('p')
+    p.innerText = `${toy.likes} Likes`
+  })
+  }
+
+function deleteToy(toy){
+  fetch(`http://localhost:3000/toys/${toy.id}`,{
+    method: 'DELETE'
+  })
+  .then(r => r.json())
+  .then(() =>{
+    let deletedToy = document.getElementById(toy.id)
+    deletedToy.remove()
   })
 }
