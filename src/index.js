@@ -19,7 +19,7 @@ function loadSingleToy(toy){
   const collection = document.querySelector('#toy-collection')
   const newDiv = document.createElement('div')
   newDiv.className = 'card'
-  newDiv.id = toy.id
+  newDiv.id = `toy${toy.id}`
   const name = document.createElement('h2')
   name.innerText = toy.name
   const imgTag = document.createElement('img')
@@ -86,7 +86,7 @@ function likeToy(toy){
   })
   .then(r => r.json())
   .then(toy => {
-    let thisToy = document.querySelector(`div${toy.id}`)
+    let thisToy = document.querySelector(`#toy${toy.id}`)
     let p = thisToy.querySelector('p')
     p.innerText = `${toy.likes} Likes`
   })
